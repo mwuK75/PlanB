@@ -25,7 +25,7 @@ body {
 /* Container for mobile-like view */
 #app-container {
     width: 100%;
-    max-width: 450px;
+    max-width: 550px;
     min-height: 100vh;
     background-color: #fff;
     box-shadow: 0 0 20px rgba(0,0,0,0.1);

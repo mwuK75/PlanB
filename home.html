@@ -10,10 +10,9 @@
 
 <div id="app-container">
     <header>
-        <div class="logo" onclick="resetApp()">
-            <div class="logo-icon">✨</div>
+        <a href="home.html" class="logo" style="text-decoration: none; color: inherit;">
             <span>PlanB</span>
-        </div>
+        </a>
         <button style="border:none; background:none; font-size:1.2rem;">💬</button>
     </header>
 
@@ -24,7 +23,7 @@
             <div class="hero-section">
                 <div class="hero-text">
                     <h2>予定、崩れちゃった？</h2>
-                    <p>今の状況を教えて。AIがリカバリー案を<br>最速で提案します。</p>
+                    <p>今の状況を教えて。代わりの案を<br>最速で提案します。</p>
                 </div>
             </div>
 
@@ -217,11 +216,6 @@
             // 状況パラメータを付けて結果ページへ移動
             window.location.href = `result.html?situation=${situation}`;
         }, 1500);
-    }
-
-    function resetApp() {
-        setPhase('home');
-        document.getElementById('plans-list').innerHTML = '';
     }
 
     // 初期状態
