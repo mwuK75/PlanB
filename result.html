@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlanB - 混雑回避ルート</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="app-container">
+    <header>
+        <div class="logo" onclick="goHome()">
+            <div class="logo-icon">✨</div>
+            <span>PlanB</span>
+        </div>
+        <button style="border:none; background:none; font-size:1.2rem;">💬</button>
+    </header>
+
+    <main>
+        <!-- 結果画面 -->
+        <div id="phase-result" style="display: block; padding: 20px;">
+            <div class="result-header">
+                <div>
+                    <h2 style="font-size:1.2rem; margin:0;">3つのPlanB</h2>
+                    <p style="font-size:0.8rem; color:#6b7280; margin:0;">混雑回避ルート</p>
+                </div>
+                <a href="home.html" style="color:#7c3aed; font-size:0.9rem; text-decoration:none;">条件変更</a>
+            </div>
+            
+            <!-- JavaScriptが動的に生成 -->
+            <div id="plans-list"></div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // --- JavaScriptの基本：データ構造（配列・オブジェクト） ---
+    const basePlans = [
+        {
+            id: 1,
+            name: "Blue Bottle Coffee",
+            category: "Cafe",
+            distance: "3分",
+            wait: "空席あり",
+            congestionLevel: "low",
+            price: "¥600~",
+            desc: "ここなら今すぐ座れます。電源もあり。",
+            tags: ["#静か", "#作業OK"],
+            icon: "☕"
+        },
+        {
+            id: 2,
+            name: "TSUTAYA BOOK APARTMENT",
+            category: "Lounge",
+            distance: "5分",
+            wait: "やや混雑",
+            congestionLevel: "medium",
+            price: "¥1200~",
+            desc: "靴を脱いでリラックス。充電完了までここで。",
+            tags: ["#個室あり", "#漫画"],
+            icon: "📖"
+        },
+        {
+            id: 3,
+            name: "カラオケ館 プレミアム",
+            category: "Entertainment",
+            distance: "1分",
+            wait: "即入室可",
+            congestionLevel: "low",
+            price: "¥800~",
+            desc: "30分だけ歌ってストレス発散しませんか？",
+            tags: ["#防音", "#駅チカ"],
+            icon: "🎤"
+        },
+        {
+            id: 4,
+            name: "隠れ家イタリアン VINO",
+            category: "Restaurant",
+            distance: "8分",
+            wait: "空席わずか",
+            congestionLevel: "high",
+            price: "¥1500~",
+            desc: "路地裏なので穴場です。ピザが絶品。",
+            tags: ["#おしゃれ", "#ランチ"],
+            icon: "🍝"
+        },
+        {
+            id: 5,
+            name: "近代美術館 ロビー",
+            category: "Public",
+            distance: "6分",
+            wait: "空いている",
+            congestionLevel: "low",
+            price: "¥0",
+            desc: "雨宿りに最適。静かで落ち着けます。",
+            tags: ["#無料", "#屋内"],
+            icon: "🏛️"
+        }
+    ];
+
+    // --- JavaScript関数：ロジック処理 ---
+    function generatePlansData(situation) {
+        let filtered = [...basePlans];
+        
+        // 条件分岐（if/else）
+        if (situation === 'rain') {
+            filtered = filtered.filter(p => ["Lounge", "Entertainment", "Public", "Cafe"].includes(p.category));
+        } else if (situation === 'full') {
+            filtered = filtered.filter(p => p.congestionLevel === 'low');
+        } else if (situation === 'late') {
+            filtered = filtered.filter(p => ["Cafe", "Lounge", "Public"].includes(p.category));
+        }
+
+        // ランダムにシャッフル
+        return filtered.sort(() => Math.random() - 0.5).slice(0, 3);
+    }
+
+    // --- JavaScript要素：HTMLデータから生成 ---
+    function renderPlans(plans) {
+        const container = document.getElementById('plans-list');
+        container.innerHTML = ''; // 前のリストをクリア
+
+        // ループ処理（forEach）
+        plans.forEach(plan => {
+            // ステータス色とインジケーターを判定
+            let statusClass = 'status-low';
+            let statusEmoji = '🟢';
+            
+            if (plan.congestionLevel === 'medium') { 
+                statusClass = 'status-medium'; 
+                statusEmoji = '🟡';
+            }
+            if (plan.congestionLevel === 'high') { 
+                statusClass = 'status-high'; 
+                statusEmoji = '🔴';
+            }
+
+            // タグのHTML生成
+            const tagsHtml = plan.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+
+            // テンプレートリテラルを使用したHTML構築
+            const cardHtml = `
+                <div class="plan-card">
+                    <div class="card-content">
+                        <div class="card-header">
+                            <div class="card-icon">${plan.icon}</div>
+                            <div class="card-title">
+                                <h3>${plan.name}</h3>
+                                <p>${plan.category} • 歩いて${plan.distance}</p>
+                            </div>
+                        </div>
+                        <p class="card-description">${plan.desc}</p>
+                        <div class="tags">${tagsHtml}</div>
+                        <div class="card-footer">
+                            <div class="card-footer-left">
+                                <span class="status-badge ${statusClass}">
+                                    ${statusEmoji} ${plan.wait}
+                                </span>
+                                <span class="card-price">予算: ${plan.price}</span>
+                            </div>
+                            <button class="btn-go">ここに行く →</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += cardHtml;
+        });
+    }
+
+    // ホーム画面へ戻る
+    function goHome() {
+        window.location.href = 'home.html';
+    }
+
+    // ページ読み込み時にプラン候補を生成・表示
+    window.addEventListener('load', () => {
+        const situation = new URLSearchParams(window.location.search).get('situation') || 'full';
+        const plans = generatePlansData(situation);
+        renderPlans(plans);
+    });
+</script>
+
+</body>
+</html>

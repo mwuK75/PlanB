@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlanB</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="app-container">
+    <header>
+        <div class="logo" onclick="resetApp()">
+            <div class="logo-icon">✨</div>
+            <span>PlanB</span>
+        </div>
+        <button style="border:none; background:none; font-size:1.2rem;">💬</button>
+    </header>
+
+    <main>
+        <!-- ホーム画面 -->
+        <div id="phase-home">
+            <!-- ヒーローセクション -->
+            <div class="hero-section">
+                <div class="hero-text">
+                    <h2>予定、崩れちゃった？</h2>
+                    <p>今の状況を教えて。AIがリカバリー案を<br>最速で提案します。</p>
+                </div>
+            </div>
+
+            <!-- 状況選択ボタン -->
+            <div class="situations-section">
+                <div class="grid-buttons">
+                    <div class="situation-btn" onclick="handleGenerate('full')">
+                        <div class="icon-circle" style="background-color: #fed7aa;">👥</div>
+                        <h3>お店が満席...</h3>
+                        <p>近くの空き店舗を探す</p>
+                    </div>
+
+                    <div class="situation-btn" onclick="handleGenerate('rain')">
+                        <div class="icon-circle" style="background-color: #bfdbfe;">☔</div>
+                        <h3>雨が降ってきた</h3>
+                        <p>屋内の遊び場へ</p>
+                    </div>
+
+                    <div class="situation-btn" onclick="handleGenerate('late')">
+                        <div class="icon-circle" style="background-color: #d1fae5;">⏰</div>
+                        <h3>相手が遅刻</h3>
+                        <p>時間つぶしスポット</p>
+                    </div>
+
+                    <div class="situation-btn" onclick="handleGenerate('bored')">
+                        <div class="icon-circle" style="background-color: #e9d5ff;">✨</div>
+                        <h3>暇になった</h3>
+                        <p>今すぐ遊べる場所</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 位置情報セクション -->
+            <div class="location-info-section">
+                <div class="location-card">
+                    <div class="location-icon">📍</div>
+                    <div class="location-text">
+                        <h4>現在地から検索</h4>
+                        <p>半径500m以内のおすすめスポットを表示</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 機能紹介セクション -->
+            <div class="features-section">
+                <h3>PlanBの3つの力</h3>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div class="feature-icon">⚡</div>
+                        <div class="feature-text">
+                            <p><span>最速3秒</span>でAIがリカバリー案を生成</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🎯</div>
+                        <div class="feature-text">
+                            <p><span>混雑回避</span>で待ち時間ゼロの提案</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📱</div>
+                        <div class="feature-text">
+                            <p><span>グループ対応</span>で友達と一緒に使える</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ローディング画面 -->
+        <div id="phase-loading">
+            <div class="spinner"></div>
+            <h3 style="color:#312e81; margin-top:20px;">AIがPlanBを生成中...</h3>
+            <p id="loading-text" style="color:#6b7280; font-size:0.9rem;"></p>
+        </div>
+    </main>
+</div>
+
+<script>
+    // --- JavaScriptの基本：データ構造（配列・オブジェクト） ---
+    const basePlans = [
+        {
+            id: 1,
+            name: "Blue Bottle Coffee",
+            category: "Cafe",
+            distance: "3分",
+            wait: "空席あり",
+            congestionLevel: "low",
+            price: "¥600~",
+            desc: "ここなら今すぐ座れます。電源もあり。",
+            tags: ["#静か", "#作業OK"],
+            icon: "☕"
+        },
+        {
+            id: 2,
+            name: "TSUTAYA BOOK APARTMENT",
+            category: "Lounge",
+            distance: "5分",
+            wait: "やや混雑",
+            congestionLevel: "medium",
+            price: "¥1200~",
+            desc: "靴を脱いでリラックス。充電完了までここで。",
+            tags: ["#個室あり", "#漫画"],
+            icon: "📖"
+        },
+        {
+            id: 3,
+            name: "カラオケ館 プレミアム",
+            category: "Entertainment",
+            distance: "1分",
+            wait: "即入室可",
+            congestionLevel: "low",
+            price: "¥800~",
+            desc: "30分だけ歌ってストレス発散しませんか？",
+            tags: ["#防音", "#駅チカ"],
+            icon: "🎤"
+        },
+        {
+            id: 4,
+            name: "隠れ家イタリアン VINO",
+            category: "Restaurant",
+            distance: "8分",
+            wait: "空席わずか",
+            congestionLevel: "high",
+            price: "¥1500~",
+            desc: "路地裏なので穴場です。ピザが絶品。",
+            tags: ["#おしゃれ", "#ランチ"],
+            icon: "🍝"
+        },
+        {
+            id: 5,
+            name: "近代美術館 ロビー",
+            category: "Public",
+            distance: "6分",
+            wait: "空いている",
+            congestionLevel: "low",
+            price: "¥0",
+            desc: "雨宿りに最適。静かで落ち着けます。",
+            tags: ["#無料", "#屋内"],
+            icon: "🏛️"
+        }
+    ];
+
+    // --- JavaScript関数：ロジック処理 ---
+    function generatePlansData(situation) {
+        let filtered = [...basePlans];
+        
+        // 条件分岐（if/else）
+        if (situation === 'rain') {
+            filtered = filtered.filter(p => ["Lounge", "Entertainment", "Public", "Cafe"].includes(p.category));
+        } else if (situation === 'full') {
+            filtered = filtered.filter(p => p.congestionLevel === 'low');
+        } else if (situation === 'late') {
+            filtered = filtered.filter(p => ["Cafe", "Lounge", "Public"].includes(p.category));
+        }
+
+        // ランダムにシャッフル
+        return filtered.sort(() => Math.random() - 0.5).slice(0, 3);
+    }
+
+    // --- JavaScript要素と属性：DOM操作 ---
+    function setPhase(phaseName) {
+        // すべてのフェーズを非表示
+        document.getElementById('phase-home').style.display = 'none';
+        document.getElementById('phase-loading').style.display = 'none';
+        document.getElementById('phase-result').style.display = 'none';
+
+        // リクエストされたフェーズを表示
+        if (phaseName === 'loading') {
+            document.getElementById('phase-loading').style.display = 'flex';
+        } else {
+            document.getElementById('phase-' + phaseName).style.display = 'block';
+        }
+    }
+
+    // --- JavaScriptイベント：クリックハンドラ ---
+    function handleGenerate(situation) {
+        setPhase('loading');
+        
+        const loadingTexts = {
+            'rain': '屋根のある場所を探しています',
+            'full': '空席情報をリアルタイム照会中',
+            'late': '時間つぶしスポットを検索中',
+            'bored': '最適な遊び場を検索中'
+        };
+        document.getElementById('loading-text').textContent = loadingTexts[situation] || '検索中...';
+
+        // API呼び出しの遅延をシミュレート
+        setTimeout(() => {
+            // 状況パラメータを付けて結果ページへ移動
+            window.location.href = `result.html?situation=${situation}`;
+        }, 1500);
+    }
+
+    function resetApp() {
+        setPhase('home');
+        document.getElementById('plans-list').innerHTML = '';
+    }
+
+    // 初期状態
+    // setPhase('home'); // CSSがデフォルトで処理
+</script>
+
+</body>
+</html>
