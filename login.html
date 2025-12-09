@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlanB - ログイン</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ログイン画面専用スタイル */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #d97706 0%, #f97316 50%, #ec4899 100%);
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .login-container h1 {
+            font-size: 2.5rem;
+            margin: 0 0 30px;
+            color: #d97706;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #d97706;
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #d97706 0%, #f97316 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(217, 119, 6, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .signup-link {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .signup-link a {
+            color: #d97706;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h1>PlanB</h1>
+    
+    <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+            <label for="email">メールアドレス</label>
+            <input type="email" id="email" placeholder="example@email.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">パスワード</label>
+            <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="login-btn">ログイン</button>
+    </form>
+
+    <div class="signup-link">
+        アカウントをお持ちでない方は
+        <a onclick="goToSignup()">新規登録</a>
+    </div>
+</div>
+
+<script>
+    // ログイン処理の実装
+    function handleLogin(event) {
+        event.preventDefault(); // フォームのデフォルト送信を防ぐ
+        
+        // 入力値の取得
+        const emailInput = document.getElementById('email').value;
+        const passwordInput = document.getElementById('password').value;
+
+        // 正解データの定義
+        const VALID_EMAIL = "123456@mwu.jp";
+        const VALID_PASSWORD = "mukogawa";
+
+        // 入力チェック（バリデーション）
+        if (!emailInput || !passwordInput) {
+            alert('メールアドレスとパスワードを入力してください');
+            return;
+        }
+
+        // 認証ロジック
+        if (emailInput === VALID_EMAIL && passwordInput === VALID_PASSWORD) {
+            console.log('認証成功');
+            // 認証成功時にホーム画面へ遷移
+            window.location.href = 'home.html';
+        } else {
+            console.log('認証失敗');
+            alert('メールアドレスまたはパスワードが間違っています。');
+        }
+    }
+
+    // 新規登録ページへ移動
+    function goToSignup() {
+        window.location.href = 'signup.html';
+    }
+</script>
+
+</body>
+</html>
