@@ -5,264 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PlanB - ホーム</title>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        /* ホーム画面専用スタイル */
-        body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f3f4f6; /* 背景色追加 */
-        }
-
-        #app-container {
-            width: 100%;
-            max-width: 550px;
-            min-height: 100vh;
-            background-color: #fff;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            margin: 0 auto;
-        }
-
-        /* ヘッダー */
-        header {
-            position: sticky;
-            top: 0;
-            background: linear-gradient(135deg, #d97706 0%, #f97316 100%);
-            padding: 15px 20px;
-            border-bottom: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 800;
-            font-size: 1.3rem;
-            color: #ffffff;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        /* ヘッダー内のボタングループ（チャットボタンとログアウトボタン） */
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        header button {
-            border: none;
-            background: none;
-            cursor: pointer;
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-            padding: 5px 10px;
-            border-radius: 6px;
-            transition: background-color 0.2s;
-        }
-        
-        header button:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        /* メインコンテンツ */
-        main {
-            padding: 0;
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            background-color: #fdf2f8;
-        }
-
-        /* ホーム画面 */
-        #phase-home {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ヒーローセクション */
-        .hero-section {
-            background: linear-gradient(135deg, #d97706 0%, #f97316 50%, #ec4899 100%);
-            padding: 30px 20px;
-            color: white;
-            text-align: center;
-        }
-
-        .hero-text h2 {
-            font-size: 1.8rem;
-            margin: 0 0 12px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        .hero-text p {
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 0.95rem;
-            margin: 0;
-            line-height: 1.5;
-        }
-
-        /* 予定選択カード */
-        .plan-selection-section {
-            padding: 25px 20px;
-        }
-
-        .selection-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #1f2937;
-            margin: 0 0 16px;
-        }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .plan-card {
-            background: white;
-            border: 2px solid #fde2e4;
-            border-radius: 12px;
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .plan-card:hover {
-            border-color: #d97706;
-            box-shadow: 0 8px 16px rgba(217, 119, 6, 0.12);
-            transform: translateY(-2px);
-        }
-
-        .plan-card:active {
-            transform: translateY(0);
-        }
-
-        .plan-card h3 {
-            margin: 0 0 6px;
-            font-size: 1rem;
-            color: #1f2937;
-            font-weight: 600;
-        }
-
-        .plan-card p {
-            margin: 0;
-            font-size: 0.85rem;
-            color: #6b7280;
-        }
-
-        .plan-card .emoji {
-            font-size: 1.5rem;
-            margin-right: 10px;
-            display: inline-block;
-        }
-
-        /* 緊急ボタンセクション */
-        .emergency-section {
-            padding: 0 20px 25px;
-        }
-
-        .mode-btn {
-            width: 100%;
-            padding: 16px;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .mode-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .mode-btn:active {
-            transform: translateY(0);
-        }
-
-        /* 通常時（緊急モードへ切り替えるボタン）：赤色 */
-        .mode-btn-danger {
-            background-color: #ef4444; 
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
-        }
-        .mode-btn-danger:hover {
-            background-color: #dc2626;
-        }
-
-        /* 緊急時（通常モードへ戻るボタン）：緑色 */
-        .mode-btn-safe {
-            background-color: #10b981;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-        }
-        .mode-btn-safe:hover {
-            background-color: #059669;
-        }
-
-        .mode-btn-text {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .mode-btn-emoji {
-            font-size: 1.5rem;
-        }
-
-        /* ローディング画面 */
-        #phase-loading {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #fbcfe8;
-            border-top: 4px solid #f97316;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        #phase-loading h3 {
-            color: #d97706;
-            margin-top: 24px;
-            font-size: 1.1rem;
-        }
-
-        #phase-loading p {
-            color: #9ca3af;
-            font-size: 0.9rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
 </head>
-<body>
+<body class="page-home">
 
 <div id="app-container">
     <header>
@@ -271,8 +15,8 @@
         </a>
         
         <div class="header-actions">
-            <button onclick="handleLogout()">ログアウト</button>
-            <button style="font-size:1.2rem;">💬</button>
+            <button class="btn-transparent" onclick="handleLogout()">ログアウト</button>
+            <button class="btn-transparent icon-btn">💬</button>
         </div>
     </header>
 
@@ -311,38 +55,28 @@
 </div>
 
 <script>
-    // --- JavaScriptの基本：データ構造（配列・オブジェクト） ---
-    
-    // 通常モードのカード内容
+    // データ定義
     const normalModeCards = [
         { title: "今から１時間以内で行ける近場", emoji: "📍", situation: "near" },
         { title: "今日の気分", emoji: "😊", situation: "mood" },
         { title: "屋内プラン", emoji: "🏢", situation: "indoor" }
     ];
 
-    // 緊急モードのカード内容
     const emergencyModeCards = [
         { title: "30分でできること", emoji: "⏱️", situation: "quick" },
         { title: "人込みで疲れた", emoji: "😫", situation: "crowded" },
         { title: "ドタキャンされた", emoji: "😢", situation: "cancel" }
     ];
 
-    // 現在のモード（通常/緊急）
     let isEmergencyMode = false;
 
-    // --- JavaScript関数：DOM操作とロジック処理 ---
-
-    // ログアウト処理
+    // ログアウト
     function handleLogout() {
-        // 確認ダイアログを出す場合は以下のように記述
-        // if(confirm("ログアウトしますか？")) { ... }
-        
         console.log("ログアウトしました");
-        // ログイン画面へ遷移
         window.location.href = 'login.html';
     }
 
-    // カードを描画する関数
+    // カード描画
     function renderCards(cards) {
         const container = document.getElementById('planCards');
         container.innerHTML = '';
@@ -352,18 +86,14 @@
             cardElement.className = 'plan-card';
             cardElement.onclick = () => handleSelectPlan(card.situation);
             cardElement.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="emoji">${card.emoji}</span>
-                    <div>
-                        <h3>${card.title}</h3>
-                    </div>
-                </div>
+                <span class="emoji">${card.emoji}</span>
+                <h3>${card.title}</h3>
             `;
             container.appendChild(cardElement);
         });
     }
 
-    // プラン選択時の処理
+    // プラン選択
     function handleSelectPlan(situation) {
         document.getElementById('phase-home').style.display = 'none';
         document.getElementById('phase-loading').style.display = 'flex';
@@ -384,7 +114,7 @@
         }, 1500);
     }
 
-    // 緊急モードの切り替え処理
+    // 緊急モード切り替え
     function toggleEmergencyMode() {
         isEmergencyMode = !isEmergencyMode;
 
@@ -414,7 +144,6 @@
         }
     }
 
-    // ページ読み込み時に通常モードのカードを表示
     window.addEventListener('load', () => {
         renderCards(normalModeCards);
     });
