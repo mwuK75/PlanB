@@ -1,3 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlanB - ログイン</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-login">
+
+<div class="login-container">
+    <h1 class="login-title">PlanB</h1>
+    
+    <form id="loginForm" onsubmit="handleLogin(event)">
+        <div class="form-group">
+            <label for="email">メールアドレス</label>
+            <input type="email" id="email" placeholder="example@email.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">パスワード</label>
+            <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn-primary">ログイン</button>
+    </form>
+
+    <div class="signup-link">
+        アカウントをお持ちでない方は
+        <a onclick="goToSignup()">新規登録</a>
+    </div>
+</div>
+
 <script>
     // ログイン処理の実装（サーバー通信版）
     async function handleLogin(event) {
@@ -13,7 +46,6 @@
 
         try {
             // サーバーのAPIにデータを送信 (POST)
-            // 参考: https://zenn.dev/ojk/books/intro-to-server/viewer/server-post
             const response = await fetch("/api/login", {
                 method: "POST",
                 headers: {
@@ -47,3 +79,6 @@
         window.location.href = 'signup.html';
     }
 </script>
+
+</body>
+</html>
