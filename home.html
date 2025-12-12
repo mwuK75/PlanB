@@ -45,7 +45,9 @@
 </div>
 
 <script>
+    // ==========================================
     // データ定義
+    // ==========================================
     const normalModeCards = [
         { title: "今から１時間以内で行ける近場", emoji: "📍", situation: "near" },
         { title: "今日の気分", emoji: "😊", situation: "mood" },
@@ -54,7 +56,7 @@
 
     const emergencyModeCards = [
         { title: "30分でできること", emoji: "⏱️", situation: "quick" },
-        { title: "人込みで疲れた", emoji: "😫", situation: "crowded" },
+        { title: "充電ピンチ", emoji: "🔋", situation: "battery" }, 
         { title: "ドタキャンされた", emoji: "😢", situation: "cancel" }
     ];
 
@@ -82,23 +84,29 @@
         });
     }
 
-    // ★★★ プラン選択時の処理 ★★★
+    // ==========================================
+    // プラン選択時の処理（★URLを完全修正★）
+    // ==========================================
     function handleSelectPlan(situation) {
         
+        // ★修正ポイント：Googleマップ公式の検索URL（最も確実なもの）に変更
+        // https://www.google.com/maps/search/?api=1&query=検索ワード
+        const mapBaseUrl = "https://www.google.com/maps/search/?api=1&query=";
+
         // -----------------------------------------
-        // パターンA：今から1時間以内 (場所のみ聞く)
+        // 通常 A：今から1時間以内
         // -----------------------------------------
         if (situation === 'near') {
             const locationName = window.prompt("現在地（または最寄りの駅名）を入力してください\n例：新宿、横浜駅");
             if (!locationName) return;
 
-            const query = encodeURIComponent(`観光スポット ${locationName}`);
-            window.location.href = `https://www.google.com/maps/search/${query}`;
+            const query = encodeURIComponent(`${locationName} 観光スポット`);
+            window.location.href = `${mapBaseUrl}${query}`;
             return; 
         }
 
         // -----------------------------------------
-        // パターンB：今日の気分 (場所 + 気分を聞く)
+        // 通常 B：今日の気分
         // -----------------------------------------
         if (situation === 'mood') {
             const locationName = window.prompt("場所を入力してください\n例：渋谷、梅田");
@@ -113,37 +121,69 @@
             if (!moodInput) return;
 
             let keyword = "";
-            if (moodInput === '1') keyword = "遊べる場所 アミューズメント ゲーム";
-            else if (moodInput === '2') keyword = "静かなカフェ 温泉 スパ 休憩";
-            else if (moodInput === '3') keyword = "カラオケ バッティングセンター ストレス発散";
-            else keyword = "おすすめスポット";
+            if (moodInput === '1') keyword = "遊べる場所 アミューズメント";
+            else if (moodInput === '2') keyword = "静かなカフェ 休憩";
+            else if (moodInput === '3') keyword = "カラオケ ストレス発散";
+            else keyword = "おすすめ";
 
             const query = encodeURIComponent(`${locationName} ${keyword}`);
-            window.location.href = `https://www.google.com/maps/search/${query}`;
+            window.location.href = `${mapBaseUrl}${query}`;
             return;
         }
 
         // -----------------------------------------
-        // パターンC：屋内プラン (場所 + 屋内キーワード) ★ここを追加しました
+        // 通常 C：屋内プラン
         // -----------------------------------------
         if (situation === 'indoor') {
-            // 1. 場所を聞く
             const locationName = window.prompt("場所（エリア）を入力してください\n例：東京駅、心斎橋");
             if (!locationName) return;
 
-            // 2. 屋内用のキーワードをセット
-            // これらをまとめて検索することで、雨の日でも行ける場所がヒットしやすくなります
-            const keyword = "屋内 遊べる場所 水族館 映画館 博物館 ショッピングモール";
-
-            // 3. マップを開く
+            const keyword = "屋内 遊べる場所 水族館 映画館 博物館";
             const query = encodeURIComponent(`${locationName} ${keyword}`);
-            window.location.href = `https://www.google.com/maps/search/${query}`;
+            window.location.href = `${mapBaseUrl}${query}`;
             return;
         }
 
         // -----------------------------------------
-        // その他のプラン (result.htmlへ)
+        // 緊急 A：30分でできること
         // -----------------------------------------
+        if (situation === 'quick') {
+            const locationName = window.prompt("今いる場所を入力してください\n例：渋谷駅ハチ公前");
+            if (!locationName) return;
+
+            const keyword = "カフェ 本屋 ファストフード 休憩";
+            const query = encodeURIComponent(`${locationName} ${keyword}`);
+            window.location.href = `${mapBaseUrl}${query}`;
+            return;
+        }
+
+        // -----------------------------------------
+        // 緊急 B：充電ピンチ
+        // -----------------------------------------
+        if (situation === 'battery') {
+            const locationName = window.prompt("今いる場所を入力してください\n例：新宿駅、近くの交差点");
+            if (!locationName) return;
+
+            const keyword = "コンビニ モバイルバッテリーレンタル";
+            const query = encodeURIComponent(`${locationName} ${keyword}`);
+            window.location.href = `${mapBaseUrl}${query}`;
+            return;
+        }
+
+        // -----------------------------------------
+        // 緊急 C：ドタキャンされた
+        // -----------------------------------------
+        if (situation === 'cancel') {
+            const locationName = window.prompt("今いる場所を入力してください\n例：銀座、難波");
+            if (!locationName) return;
+
+            const keyword = "一人 映画館 おしゃれなカフェ 商業施設 温泉 スパ";
+            const query = encodeURIComponent(`${locationName} ${keyword}`);
+            window.location.href = `${mapBaseUrl}${query}`;
+            return;
+        }
+
+        // 未設定の場合
         window.location.href = `result.html?situation=${situation}`;
     }
 
