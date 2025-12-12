@@ -13,9 +13,9 @@
         <a href="#" class="logo">
             <img src="fig/head.png" alt="PlanB" class="header-logo">
         </a>
-        
         <div class="header-actions">
             <button class="btn-transparent" onclick="handleLogout()">ログアウト</button>
+        </div>
     </header>
 
     <main>
@@ -29,9 +29,7 @@
 
             <div class="plan-selection-section">
                 <h2 class="selection-title" id="selectionTitle">どんな状況ですか？</h2>
-
-                <div class="cards-grid" id="planCards">
-                    </div>
+                <div class="cards-grid" id="planCards"></div>
 
                 <div class="emergency-section">
                     <button id="modeToggleBtn" class="mode-btn mode-btn-danger" onclick="toggleEmergencyMode()">
@@ -42,12 +40,6 @@
                     </button>
                 </div>
             </div>
-        </div>
-
-        <div id="phase-loading">
-            <div class="spinner"></div>
-            <h3>AIがPlanBを生成中...</h3>
-            <p id="loading-text"></p>
         </div>
     </main>
 </div>
@@ -78,7 +70,6 @@
     function renderCards(cards) {
         const container = document.getElementById('planCards');
         container.innerHTML = '';
-
         cards.forEach(card => {
             const cardElement = document.createElement('div');
             cardElement.className = 'plan-card';
@@ -91,31 +82,74 @@
         });
     }
 
-    // プラン選択
+    // ★★★ プラン選択時の処理 ★★★
     function handleSelectPlan(situation) {
-        document.getElementById('phase-home').style.display = 'none';
-        document.getElementById('phase-loading').style.display = 'flex';
+        
+        // -----------------------------------------
+        // パターンA：今から1時間以内 (場所のみ聞く)
+        // -----------------------------------------
+        if (situation === 'near') {
+            const locationName = window.prompt("現在地（または最寄りの駅名）を入力してください\n例：新宿、横浜駅");
+            if (!locationName) return;
 
-        const loadingTexts = {
-            'near': '近くのスポットを探しています',
-            'mood': '気分に合ったプランを探しています',
-            'indoor': '屋内の遊び場を探しています',
-            'quick': '30分でできることを探しています',
-            'crowded': '落ち着ける場所を探しています',
-            'cancel': 'リカバリープランを生成中'
-        };
+            const query = encodeURIComponent(`観光スポット ${locationName}`);
+            window.location.href = `https://www.google.com/maps/search/${query}`;
+            return; 
+        }
 
-        document.getElementById('loading-text').textContent = loadingTexts[situation] || '検索中...';
+        // -----------------------------------------
+        // パターンB：今日の気分 (場所 + 気分を聞く)
+        // -----------------------------------------
+        if (situation === 'mood') {
+            const locationName = window.prompt("場所を入力してください\n例：渋谷、梅田");
+            if (!locationName) return;
 
-        setTimeout(() => {
-            window.location.href = `result.html?situation=${situation}`;
-        }, 1500);
+            const moodInput = window.prompt(
+                "今の気分を番号で選んでください\n\n" +
+                "1: 楽しい！もっと盛り上がりたい\n" +
+                "2: 疲れた...ゆっくり癒やされたい\n" +
+                "3: イライラ！ストレス発散したい"
+            );
+            if (!moodInput) return;
+
+            let keyword = "";
+            if (moodInput === '1') keyword = "遊べる場所 アミューズメント ゲーム";
+            else if (moodInput === '2') keyword = "静かなカフェ 温泉 スパ 休憩";
+            else if (moodInput === '3') keyword = "カラオケ バッティングセンター ストレス発散";
+            else keyword = "おすすめスポット";
+
+            const query = encodeURIComponent(`${locationName} ${keyword}`);
+            window.location.href = `https://www.google.com/maps/search/${query}`;
+            return;
+        }
+
+        // -----------------------------------------
+        // パターンC：屋内プラン (場所 + 屋内キーワード) ★ここを追加しました
+        // -----------------------------------------
+        if (situation === 'indoor') {
+            // 1. 場所を聞く
+            const locationName = window.prompt("場所（エリア）を入力してください\n例：東京駅、心斎橋");
+            if (!locationName) return;
+
+            // 2. 屋内用のキーワードをセット
+            // これらをまとめて検索することで、雨の日でも行ける場所がヒットしやすくなります
+            const keyword = "屋内 遊べる場所 水族館 映画館 博物館 ショッピングモール";
+
+            // 3. マップを開く
+            const query = encodeURIComponent(`${locationName} ${keyword}`);
+            window.location.href = `https://www.google.com/maps/search/${query}`;
+            return;
+        }
+
+        // -----------------------------------------
+        // その他のプラン (result.htmlへ)
+        // -----------------------------------------
+        window.location.href = `result.html?situation=${situation}`;
     }
 
     // 緊急モード切り替え
     function toggleEmergencyMode() {
         isEmergencyMode = !isEmergencyMode;
-
         const titleElement = document.getElementById('selectionTitle');
         const btnElement = document.getElementById('modeToggleBtn');
         const textElement = document.getElementById('modeText');
@@ -125,7 +159,6 @@
             renderCards(emergencyModeCards);
             titleElement.textContent = "緊急サポート: 状況を選んでください";
             titleElement.style.color = "#dc2626";
-            
             btnElement.classList.remove('mode-btn-danger');
             btnElement.classList.add('mode-btn-safe');
             textElement.textContent = "通常モードに戻る";
@@ -134,7 +167,6 @@
             renderCards(normalModeCards);
             titleElement.textContent = "どんな状況ですか？";
             titleElement.style.color = "#1f2937";
-            
             btnElement.classList.remove('mode-btn-safe');
             btnElement.classList.add('mode-btn-danger');
             textElement.textContent = "緊急モード";
@@ -142,9 +174,8 @@
         }
     }
 
-    window.addEventListener('load', () => {
-        renderCards(normalModeCards);
-    });
+    // 初期化
+    renderCards(normalModeCards);
 </script>
 
 </body>
