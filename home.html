@@ -10,7 +10,7 @@
 
 <div id="app-container">
     <header>
-        <a href="#" class="logo">
+        <a href="home.html" class="logo">
             <img src="fig/head.png" alt="PlanB" class="header-logo">
         </a>
         <div class="header-actions">
@@ -23,12 +23,12 @@
             <div class="hero-section">
                 <div class="hero-text">
                     <h2>予定、崩れちゃった？</h2>
-                    <p>今の状況を教えて。AIが代わりの案を<br>最速で提案します。</p>
+                    <p>現在地からベストな「代わりのプラン」を即座に提案します。</p>
                 </div>
             </div>
 
             <div class="plan-selection-section">
-                <h2 class="selection-title" id="selectionTitle">どんな状況ですか？</h2>
+                <h2 class="selection-title" id="selectionTitle">今日はどうしますか？</h2>
                 <div class="cards-grid" id="planCards"></div>
 
                 <div class="emergency-section">
@@ -84,12 +84,10 @@
         });
     }
 
-    // ==========================================
-    // プラン選択時の処理（★URLを完全修正★）
-    // ==========================================
+ 
+
     function handleSelectPlan(situation) {
         
-        // ★修正ポイント：Googleマップ公式の検索URL（最も確実なもの）に変更
         // https://www.google.com/maps/search/?api=1&query=検索ワード
         const mapBaseUrl = "https://www.google.com/maps/search/?api=1&query=";
 
@@ -164,7 +162,7 @@
             const locationName = window.prompt("今いる場所を入力してください\n例：新宿駅、近くの交差点");
             if (!locationName) return;
 
-            const keyword = "コンビニ モバイルバッテリーレンタル";
+            const keyword = "コンビニ チャージスポット";
             const query = encodeURIComponent(`${locationName} ${keyword}`);
             window.location.href = `${mapBaseUrl}${query}`;
             return;
@@ -182,9 +180,6 @@
             window.location.href = `${mapBaseUrl}${query}`;
             return;
         }
-
-        // 未設定の場合
-        window.location.href = `result.html?situation=${situation}`;
     }
 
     // 緊急モード切り替え
@@ -205,7 +200,7 @@
             emojiElement.textContent = "🏠";
         } else {
             renderCards(normalModeCards);
-            titleElement.textContent = "どんな状況ですか？";
+            titleElement.textContent = "どうしますか？";
             titleElement.style.color = "#1f2937";
             btnElement.classList.remove('mode-btn-safe');
             btnElement.classList.add('mode-btn-danger');
