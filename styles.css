@@ -349,41 +349,131 @@ main {
 .mode-btn-emoji {
     font-size: 1.5rem;
 }
+/* styles.css の末尾に追加 */
 
 /* =========================================
-   7. ローディング画面 (Loading)
+   8. メモ帳エリア (Memo Pad)
    ========================================= */
-#phase-loading {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh; /* メインエリアいっぱいに */
-    min-height: 400px;
-    background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+.memo-section {
+    padding: 0 20px 20px; /* 横と下の余白 */
 }
 
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid #fbcfe8;
-    border-top: 4px solid #f97316;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+.memo-container {
+    background-color: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 15px;
 }
 
-#phase-loading h3 {
-    color: #d97706;
-    margin-top: 24px;
-    font-size: 1.1rem;
-}
-
-#phase-loading p {
-    color: #9ca3af;
+.memo-label {
+    display: block;
     font-size: 0.9rem;
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 8px;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.memo-textarea {
+    width: 100%;
+    height: 80px; /* 初期の高さ */
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    resize: vertical; /* 縦方向のみサイズ変更可能 */
+    font-family: inherit;
+}
+
+.memo-textarea:focus {
+    outline: none;
+    border-color: #d97706; /* フォーカス時にオレンジ色に */
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+}
+/* styles.css の末尾に追加 */
+
+/* メモ帳のボタンエリア */
+.memo-actions {
+    display: flex;
+    justify-content: flex-end; /* 右寄せ */
+    gap: 10px;                 /* ボタン同士の間隔 */
+    margin-top: 10px;
+}
+
+/* 小さめのボタン共通設定 */
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    color: white;
+}
+/* 削除ボタン（赤） */
+.btn-delete {
+    background-color: #ef4444;
+}
+.btn-delete:hover {
+    background-color: #dc2626;
+}
+
+/* =========================================
+   9. 説明ページ (Explain Page)
+   ========================================= */
+.explain-container {
+    background: white;
+    padding: 30px 20px;
+    border-radius: 12px;
+    margin: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.explain-content h3 {
+    color: #d97706; /* テーマカラーのオレンジ */
+    border-bottom: 2px solid #fde2e4;
+    padding-bottom: 8px;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.explain-content h3:first-child {
+    margin-top: 0;
+}
+
+.explain-content p {
+    color: #4b5563;
+    line-height: 1.8;
+    margin-bottom: 15px;
+}
+
+.explain-content ul {
+    padding-left: 20px;
+    color: #4b5563;
+    margin-bottom: 20px;
+}
+
+.explain-content li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+/* 説明ページ内の「ホームに戻る」ボタン */
+.btn-back {
+    display: inline-block;
+    margin-top: 20px;
+    text-align: center;
+    background-color: #f3f4f6;
+    color: #1f2937;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    width: 100%;
+    transition: background-color 0.2s;
+}
+
+.btn-back:hover {
+    background-color: #e5e7eb;
 }
