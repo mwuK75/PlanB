@@ -3,81 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlanB - ログイン</title>
+    <title>PlanB - ホーム</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="page-login">
+<body class="page-home">
 
-<div class="login-container">
-    <img src="fig/title.png" alt="PlanB" class="login-logo"style="border-radius: 20px;">
-    
-    <form id="loginForm" onsubmit="handleLogin(event)">
-        <div class="form-group">
-            <label for="email">メールアドレス</label>
-            <input type="email" id="email" placeholder="example@email.com" required>
+<div id="app-container">
+    <header>
+        <a href="home.html" class="logo">
+            <img src="fig/head.png" alt="PlanB" class="header-logo">
+        </a>
+        <div class="header-actions">
+            <button class="btn-transparent" onclick="handleLogout()">ログアウト</button>
         </div>
+    </header>
 
-        <div class="form-group">
-            <label for="password">パスワード</label>
-            <input type="password" id="password" placeholder="••••••••" required>
+    <main>
+        <div id="phase-home">
+            <div class="hero-section">
+                <div class="hero-text">
+                    <h2>予定、崩れちゃった？</h2>
+                    <p>現在地からベストな「代わりのプラン」を即座に提案します。</p>
+                </div>
+            </div>
+
+            <div class="plan-selection-section">
+                <h2 class="selection-title" id="selectionTitle">今日はどうしますか？</h2>
+                <div class="cards-grid" id="planCards"></div>
+
+                <div class="emergency-section">
+                    <button id="modeToggleBtn" class="mode-btn mode-btn-danger" onclick="toggleEmergencyMode()">
+                        <span id="modeEmoji" class="mode-btn-emoji">🚨</span>
+                        <span class="mode-btn-text">
+                            <span id="modeText">緊急モード</span>
+                        </span>
+                    </button>
+                </div>
+            </div>
         </div>
-
-        <button type="submit" class="btn-primary">ログイン</button>
-    </form>
-
-    <div class="signup-link">
-        アカウントをお持ちでない方は
-        <a onclick="goToSignup()">新規登録</a>
-    </div>
+    </main>
 </div>
 
 <script>
-    // ログイン処理の実装（サーバー通信版）
-    async function handleLogin(event) {
-        event.preventDefault();
-        
-        const emailInput = document.getElementById('email').value;
-        const passwordInput = document.getElementById('password').value;
+    // ==========================================
+    // データ定義
+    // ==========================================
+    const normalModeCards = [
+        { title: "今から１時間以内で行ける近場", emoji: "📍", situation: "near" },
+        { title: "今日の気分", emoji: "😊", situation: "mood" },
+        { title: "屋内プラン", emoji: "🏢", situation: "indoor" }
+    ];
 
-        if (!emailInput || !passwordInput) {
-            alert('メールアドレスとパスワードを入力してください');
+    const emergencyModeCards = [
+        { title: "30分でできること", emoji: "⏱️", situation: "quick" },
+        { title: "充電ピンチ", emoji: "🔋", situation: "battery" }, 
+        { title: "ドタキャンされた", emoji: "😢", situation: "cancel" }
+    ];
+
+    let isEmergencyMode = false;
+
+    // ログアウト
+    function handleLogout() {
+        console.log("ログアウトしました");
+        window.location.href = 'login.html';
+    }
+
+    // カード描画
+    function renderCards(cards) {
+        const container = document.getElementById('planCards');
+        container.innerHTML = '';
+        cards.forEach(card => {
+            const cardElement = document.createElement('div');
+            cardElement.className = 'plan-card';
+            cardElement.onclick = () => handleSelectPlan(card.situation);
+            cardElement.innerHTML = `
+                <span class="emoji">${card.emoji}</span>
+                <h3>${card.title}</h3>
+            `;
+            container.appendChild(cardElement);
+        });
+    }
+
+ 
+
+    function handleSelectPlan(situation) {
+        
+        // https://www.google.com/maps/search/?api=1&query=検索ワード
+        const mapBaseUrl = "https://www.google.com/maps/search/?api=1&query=";
+
+        // -----------------------------------------
+        // 通常 A：今から1時間以内
+        // -----------------------------------------
+        if (situation === 'near') {
+            const locationName = window.prompt("現在地（または最寄りの駅名）を入力してください\n例：新宿、横浜駅");
+            if (!locationName) return;
+
+            const query = encodeURIComponent(`${locationName} 観光スポット`);
+            window.location.href = `${mapBaseUrl}${query}`;
+            return; 
+        }
+
+        // -----------------------------------------
+        // 通常 B：今日の気分
+        // -----------------------------------------
+        if (situation === 'mood') {
+            const locationName = window.prompt("場所を入力してください\n例：渋谷、梅田");
+            if (!locationName) return;
+
+            const moodInput = window.prompt(
+                "今の気分を番号で選んでください\n\n" +
+                "1: 楽しい！もっと盛り上がりたい\n" +
+                "2: 疲れた...ゆっくり癒やされたい\n" +
+                "3: イライラ！ストレス発散したい"
+            );
+            if (!moodInput) return;
+
+            let keyword = "";
+            if (moodInput === '1') keyword = "遊べる場所 アミューズメント";
+            else if (moodInput === '2') keyword = "静かなカフェ 休憩";
+            else if (moodInput === '3') keyword = "カラオケ ストレス発散";
+            else keyword = "おすすめ";
+
+            const query = encodeURIComponent(`${locationName} ${keyword}`);
+            window.location.href = `${mapBaseUrl}${query}`;
             return;
         }
 
-        try {
-            // サーバーのAPIにデータを送信 (POST)
-            const response = await fetch("/api/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    email: emailInput,
-                    password: passwordInput
-                })
-            });
+        // -----------------------------------------
+        // 通常 C：屋内プラン
+        // -----------------------------------------
+        if (situation === 'indoor') {
+            const locationName = window.prompt("場所（エリア）を入力してください\n例：東京駅、心斎橋");
+            if (!locationName) return;
 
-            // サーバーからの結果を受け取る
-            const result = await response.json();
+            const keyword = "屋内 遊べる場所 水族館 映画館 博物館";
+            const query = encodeURIComponent(`${locationName} ${keyword}`);
+            window.location.href = `${mapBaseUrl}${query}`;
+            return;
+        }
 
-            if (result.success) {
-                console.log('認証成功');
-                // ホーム画面へ遷移
-                window.location.href = 'home.html';
-            } else {
-                console.log('認証失敗');
-                alert('メールアドレスまたはパスワードが間違っています。');
-            }
+        // -----------------------------------------
+        // 緊急 A：30分でできること
+        // -----------------------------------------
+        if (situation === 'quick') {
+            const locationName = window.prompt("今いる場所を入力してください\n例：渋谷駅ハチ公前");
+            if (!locationName) return;
 
-        } catch (error) {
-            console.error("通信エラー:", error);
-            alert("サーバーとの通信に失敗しました。");
+            const keyword = "カフェ 本屋 ファストフード 休憩";
+            const query = encodeURIComponent(`${locationName} ${keyword}`);
+            window.location.href = `${mapBaseUrl}${query}`;
+            return;
+        }
+
+        // -----------------------------------------
+        // 緊急 B：充電ピンチ
+        // -----------------------------------------
+        if (situation === 'battery') {
+            const locationName = window.prompt("今いる場所を入力してください\n例：新宿駅、近くの交差点");
+            if (!locationName) return;
+
+            const keyword = "コンビニ チャージスポット";
+            const query = encodeURIComponent(`${locationName} ${keyword}`);
+            window.location.href = `${mapBaseUrl}${query}`;
+            return;
+        }
+
+        // -----------------------------------------
+        // 緊急 C：ドタキャンされた
+        // -----------------------------------------
+        if (situation === 'cancel') {
+            const locationName = window.prompt("今いる場所を入力してください\n例：銀座、難波");
+            if (!locationName) return;
+
+            const keyword = "一人 映画館 おしゃれなカフェ 商業施設 温泉 スパ";
+            const query = encodeURIComponent(`${locationName} ${keyword}`);
+            window.location.href = `${mapBaseUrl}${query}`;
+            return;
         }
     }
 
-    function goToSignup() {
-        window.location.href = 'signup.html';
+    // 緊急モード切り替え
+    function toggleEmergencyMode() {
+        isEmergencyMode = !isEmergencyMode;
+        const titleElement = document.getElementById('selectionTitle');
+        const btnElement = document.getElementById('modeToggleBtn');
+        const textElement = document.getElementById('modeText');
+        const emojiElement = document.getElementById('modeEmoji');
+
+        if (isEmergencyMode) {
+            renderCards(emergencyModeCards);
+            titleElement.textContent = "緊急サポート: 状況を選んでください";
+            titleElement.style.color = "#dc2626";
+            btnElement.classList.remove('mode-btn-danger');
+            btnElement.classList.add('mode-btn-safe');
+            textElement.textContent = "通常モードに戻る";
+            emojiElement.textContent = "🏠";
+        } else {
+            renderCards(normalModeCards);
+            titleElement.textContent = "どうしますか？";
+            titleElement.style.color = "#1f2937";
+            btnElement.classList.remove('mode-btn-safe');
+            btnElement.classList.add('mode-btn-danger');
+            textElement.textContent = "緊急モード";
+            emojiElement.textContent = "🚨";
+        }
     }
+
+    // 初期化
+    renderCards(normalModeCards);
 </script>
 
 </body>
