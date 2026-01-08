@@ -14,8 +14,7 @@
             <img src="fig/head.png" alt="PlanB" class="header-logo">
         </a>
         <div class="header-actions">
-            <a href="explain.html" class="btn-transparent">アプリの説明</a>
-            
+            <button class="btn-transparent" onclick="window.location.href='explain.html'">アプリの説明</button>
             <button class="btn-transparent" onclick="handleLogout()">ログアウト</button>
         </div>
     </header>
@@ -30,6 +29,11 @@
             </div>
 
             <div class="plan-selection-section">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="currentLocation">📍 今どこにいますか？</label>
+                    <input type="text" id="currentLocation" placeholder="例：新宿駅、横浜中華街">
+                </div>
+
                 <h2 class="selection-title" id="selectionTitle">今日はどうしますか？</h2>
                 
                 <div class="cards-grid" id="planCards"></div>
@@ -65,7 +69,8 @@
     const normalModeCards = [
         { title: "今から１時間以内で行ける近場", emoji: "📍", situation: "near" },
         { title: "今日の気分", emoji: "😊", situation: "mood" },
-        { title: "屋内プラン", emoji: "🏢", situation: "indoor" }
+        { title: "屋内プラン", emoji: "🏢", situation: "indoor" },
+        { title: "あなたが今から行くべき場所", emoji: "🎲", situation: "random" }
     ];
 
     const emergencyModeCards = [
@@ -75,7 +80,6 @@
     ];
 
     let isEmergencyMode = false;
-
     const STORAGE_KEY_MEMO = 'planb_user_memo';
 
     // ログアウト
@@ -88,6 +92,8 @@
     function renderCards(cards) {
         const container = document.getElementById('planCards');
         container.innerHTML = '';
+        
+        // js-array (forEach), js-element (createElement) の知識
         cards.forEach(card => {
             const cardElement = document.createElement('div');
             cardElement.className = 'plan-card';
@@ -105,6 +111,7 @@
         const memoInput = document.getElementById('userMemo');
         const deleteBtn = document.getElementById('memoDeleteBtn');
         
+        // js-storage (localStorage) の知識
         const savedMemo = localStorage.getItem(STORAGE_KEY_MEMO);
         if (savedMemo) {
             memoInput.value = savedMemo;
@@ -123,59 +130,81 @@
         });
     }
 
-    // プラン選択
+    // プラン選択時の処理
     function handleSelectPlan(situation) {
         const mapBaseUrl = "https://www.google.com/maps/search/?api=1&query=";
+        
+        // 画面のinputタグから現在地を取得
+        const locationInput = document.getElementById('currentLocation');
+        const locationName = locationInput.value;
 
-        if (situation === 'near') {
-            const locationName = window.prompt("現在地（または最寄りの駅名）を入力してください\n例：新宿、横浜駅");
-            if (!locationName) return;
-            window.location.href = `${mapBaseUrl}${encodeURIComponent(locationName + " 観光スポット")}`;
-            return; 
+        // 入力が空だった場合のチェック (js-conditional)
+        if (locationName === "") {
+            alert("「今どこにいますか？」の欄を入力してください！");
+            return;
         }
+
+        // 検索キーワードの決定
+        let keyword = "";
+
         if (situation === 'mood') {
-            const locationName = window.prompt("場所を入力してください\n例：渋谷、梅田");
-            if (!locationName) return;
-            const moodInput = window.prompt("今の気分を番号で選んでください\n1: 楽しい！\n2: 疲れた...\n3: イライラ！");
+            const moodInput = window.prompt(
+                "今の気分を番号で選んでください\n\n" +
+                "1: 楽しい！もっと盛り上がりたい\n" +
+                "2: 疲れた...ゆっくり癒やされたい\n" +
+                "3: イライラ！ストレス発散したい"
+            );
+
+            // キャンセルされた場合
             if (!moodInput) return;
 
-            let keyword = "おすすめ";
-            if (moodInput === '1') keyword = "遊べる場所 アミューズメント";
-            else if (moodInput === '2') keyword = "静かなカフェ 休憩";
-            else if (moodInput === '3') keyword = "カラオケ ストレス発散";
+            // 分岐処理
+            if (moodInput === '1') {
+                keyword = "遊べる場所 アミューズメント";
+            } else if (moodInput === '2') {
+                keyword = "静かなカフェ 休憩";
+            } else if (moodInput === '3') {
+                keyword = "カラオケ ストレス発散";
+            } else {
+                keyword = "おすすめ";
+            }
 
-            window.location.href = `${mapBaseUrl}${encodeURIComponent(locationName + " " + keyword)}`;
-            return;
+        } else if (situation === 'random') {
+            const randomThemes = [
+                "隠れ家カフェ", "人気のラーメン屋", "静かな公園", "美術館", 
+                "神社", "レトロな純喫茶", "猫カフェ", "景色が綺麗な場所", 
+                "ボウリング", "本屋", "雑貨屋", "ゲームセンター"
+            ];
+            const randomTheme = randomThemes[Math.floor(Math.random() * randomThemes.length)];
+            
+            alert("運命の決定🎲：\n\n次は「" + randomTheme + "」に行きましょう！");
+            keyword = randomTheme;
+        
+        } else if (situation === 'near') {
+            keyword = "観光スポット";
+        
+        } else if (situation === 'indoor') {
+            keyword = "屋内 遊べる場所 水族館 映画館";
+        
+        } else if (situation === 'quick') {
+            keyword = "カフェ 本屋 ファストフード 休憩";
+        
+        } else if (situation === 'battery') {
+            keyword = "コンセント カフェ 充電";
+        
+        } else if (situation === 'cancel') {
+            keyword = "一人 映画館 商業施設 スパ";
         }
-        if (situation === 'indoor') {
-            const locationName = window.prompt("場所（エリア）を入力してください\n例：東京駅、心斎橋");
-            if (!locationName) return;
-            window.location.href = `${mapBaseUrl}${encodeURIComponent(locationName + " 屋内 遊べる場所 水族館 映画館 博物館")}`;
-            return;
-        }
-        if (situation === 'quick') {
-            const locationName = window.prompt("今いる場所を入力してください\n例：渋谷駅ハチ公前");
-            if (!locationName) return;
-            window.location.href = `${mapBaseUrl}${encodeURIComponent(locationName + " カフェ 本屋 ファストフード 休憩")}`;
-            return;
-        }
-        if (situation === 'battery') {
-            const locationName = window.prompt("今いる場所を入力してください\n例：新宿駅");
-            if (!locationName) return;
-            window.location.href = `${mapBaseUrl}${encodeURIComponent(locationName + " コンビニ モバイルバッテリーレンタル")}`;
-            return;
-        }
-        if (situation === 'cancel') {
-            const locationName = window.prompt("今いる場所を入力してください\n例：銀座");
-            if (!locationName) return;
-            window.location.href = `${mapBaseUrl}${encodeURIComponent(locationName + " 一人 映画館 おしゃれなカフェ 商業施設 温泉 スパ")}`;
-            return;
-        }
+
+        // クエリパラメータ: ?q=場所+キーワード
+        const query = "?q=" + locationName + " " + keyword;
+        window.location.href = mapBaseUrl + query;
     }
 
     // 緊急モード切り替え
     function toggleEmergencyMode() {
         isEmergencyMode = !isEmergencyMode;
+        
         const titleElement = document.getElementById('selectionTitle');
         const btnElement = document.getElementById('modeToggleBtn');
         const textElement = document.getElementById('modeText');
@@ -185,22 +214,26 @@
             renderCards(emergencyModeCards);
             titleElement.textContent = "緊急サポート: 状況を選んでください";
             titleElement.style.color = "#dc2626";
+            
             btnElement.classList.remove('mode-btn-danger');
             btnElement.classList.add('mode-btn-safe');
+            
             textElement.textContent = "通常モードに戻る";
             emojiElement.textContent = "🏠";
         } else {
             renderCards(normalModeCards);
             titleElement.textContent = "どうしますか？";
             titleElement.style.color = "#1f2937";
+            
             btnElement.classList.remove('mode-btn-safe');
             btnElement.classList.add('mode-btn-danger');
+            
             textElement.textContent = "緊急モード";
             emojiElement.textContent = "🚨";
         }
     }
 
-    // 初期化
+    // 初期化処理
     window.addEventListener('load', () => {
         renderCards(normalModeCards);
         setupMemo(); 

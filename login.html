@@ -9,7 +9,7 @@
 <body class="page-login">
 
 <div class="login-container">
-    <img src="fig/title.png" alt="PlanB" class="login-logo"style="border-radius: 20px;">
+    <img src="fig/title.png" alt="PlanB" class="login-logo" style="border-radius: 20px;">
     
     <form id="loginForm" onsubmit="handleLogin(event)">
         <div class="form-group">
@@ -27,20 +27,21 @@
 </div>
 
 <script>
-    // ログイン処理の実装（サーバー通信版）
     async function handleLogin(event) {
+        // フォームの標準動作（ページ遷移）をキャンセル
         event.preventDefault();
         
         const emailInput = document.getElementById('email').value;
         const passwordInput = document.getElementById('password').value;
 
+        // クライアント側での簡易チェック
         if (!emailInput || !passwordInput) {
             alert('メールアドレスとパスワードを入力してください');
             return;
         }
 
         try {
-            // サーバーのAPIにデータを送信 (POST)
+            // fetchを使ってJSON形式でサーバーにPOST送信します。
             const response = await fetch("/api/login", {
                 method: "POST",
                 headers: {
@@ -52,12 +53,12 @@
                 })
             });
 
-            // サーバーからの結果を受け取る
+            // レスポンスもJSONとして受け取ります
             const result = await response.json();
 
             if (result.success) {
                 console.log('認証成功');
-                // ホーム画面へ遷移
+                // ログイン成功時の画面遷移
                 window.location.href = 'index.html';
             } else {
                 console.log('認証失敗');
@@ -69,8 +70,6 @@
             alert("サーバーとの通信に失敗しました。");
         }
     }
-
-
 </script>
 
 </body>
