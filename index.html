@@ -78,7 +78,7 @@
         { title: "充電ピンチ", emoji: "🔋", situation: "battery" }, 
         { title: "ドタキャンされた", emoji: "😢", situation: "cancel" }
     ];
-
+//現在の状態を覚える変数
     let isEmergencyMode = false;
     const STORAGE_KEY_MEMO = 'planb_user_memo';
 
@@ -201,7 +201,7 @@
         window.location.href = mapBaseUrl + query;
     }
 
-    // 緊急モード切り替え
+// 緊急モード切り替え
     function toggleEmergencyMode() {
         isEmergencyMode = !isEmergencyMode;
         
