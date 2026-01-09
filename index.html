@@ -220,6 +220,7 @@
             
             textElement.textContent = "通常モードに戻る";
             emojiElement.textContent = "🏠";
+            document.body.style.backgroundColor = '#fee2e2'; // 薄い赤にする
         } else {
             renderCards(normalModeCards);
             titleElement.textContent = "どうしますか？";
@@ -230,6 +231,7 @@
             
             textElement.textContent = "緊急モード";
             emojiElement.textContent = "🚨";
+            document.body.style.backgroundColor = '#ffffff'; // 白に戻す
         }
     }
 
